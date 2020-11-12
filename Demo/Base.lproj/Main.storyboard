@@ -16,7 +16,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="6rz-dr-xbJ">
-                                <rect key="frame" x="50" y="104" width="314" height="30"/>
+                                <rect key="frame" x="20" y="104" width="374" height="30"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JTB-Tc-Gi4">
                                         <rect key="frame" x="0.0" y="0.0" width="42" height="30"/>
@@ -25,7 +25,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bBh-yK-CgR">
-                                        <rect key="frame" x="85.5" y="0.0" width="50" height="30"/>
+                                        <rect key="frame" x="105.5" y="0.0" width="50" height="30"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="ABy-Qg-8DC"/>
@@ -39,13 +39,13 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I2H-IO-9fE">
-                                        <rect key="frame" x="178.5" y="0.0" width="42" height="30"/>
+                                        <rect key="frame" x="218.5" y="0.0" width="42" height="30"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hWH-DP-jIn">
-                                        <rect key="frame" x="264" y="0.0" width="50" height="30"/>
+                                        <rect key="frame" x="324" y="0.0" width="50" height="30"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="ExJ-aj-APE"/>
@@ -157,18 +157,20 @@
                             <constraint firstItem="6rz-dr-xbJ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="60" id="8nO-Md-WQk"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pML-tA-TfN" secondAttribute="trailing" constant="30" id="Esd-I7-J1W"/>
                             <constraint firstItem="ZQ3-GL-Efc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="50" id="GUz-lW-mmJ"/>
-                            <constraint firstItem="6rz-dr-xbJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="50" id="Qfp-qE-mZJ"/>
+                            <constraint firstItem="6rz-dr-xbJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Qfp-qE-mZJ"/>
                             <constraint firstItem="pML-tA-TfN" firstAttribute="top" secondItem="ZQ3-GL-Efc" secondAttribute="bottom" constant="150" id="Slt-dc-iUI"/>
                             <constraint firstItem="pML-tA-TfN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="Y93-jt-qid"/>
                             <constraint firstItem="pML-tA-TfN" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="20" id="a7Z-w1-din"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ZQ3-GL-Efc" secondAttribute="trailing" constant="50" id="jHB-SN-QXp"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6rz-dr-xbJ" secondAttribute="trailing" constant="50" id="t77-pn-jEz"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6rz-dr-xbJ" secondAttribute="trailing" constant="20" id="t77-pn-jEz"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="dataTableView" destination="pML-tA-TfN" id="x3R-bA-JUx"/>
+                        <outlet property="endDateBtnObj" destination="hWH-DP-jIn" id="988-EL-UlW"/>
                         <outlet property="endDateLbl" destination="I2H-IO-9fE" id="gpq-b7-Dwd"/>
+                        <outlet property="startDateBtnObj" destination="bBh-yK-CgR" id="QtK-6N-WId"/>
                         <outlet property="startDateLbl" destination="JTB-Tc-Gi4" id="2TM-HP-Z3c"/>
                     </connections>
                 </viewController>

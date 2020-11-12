@@ -14,10 +14,16 @@ class ViewController: UIViewController {
     var appDelegate: AppDelegate!
     var managedContext: NSManagedObjectContext!
     var entityDesc: NSEntityDescription!
+    var dateList = [NSManagedObject]()
     
     @IBOutlet weak var startDateLbl: UILabel!
     @IBOutlet weak var endDateLbl: UILabel!
     @IBOutlet weak var dataTableView: UITableView!
+    
+    @IBOutlet weak var startDateBtnObj: UIButton!
+    
+    @IBOutlet weak var endDateBtnObj: UIButton!
+    
     
     var senderTag = 0
     let datePicker = UIDatePicker()
@@ -34,6 +40,8 @@ class ViewController: UIViewController {
         
         //Printing path of core data database file
         print(NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).last!)
+        
+        endDateBtnObj.isEnabled = false
 
     }
     
@@ -50,7 +58,13 @@ class ViewController: UIViewController {
     
     
 //DatePicker Click
+    var pickedStartDate: Date?
+    var isPickedStarDateValid = false
+    var isPickedEndDateValid = false
+    var pickedEndDate: Date?
+    
     @objc func onDatePick(){
+        
         
         if senderTag == 1{
             
@@ -61,44 +75,102 @@ class ViewController: UIViewController {
             let today = getTodayDate() as Date
             
             //picked date from date picker in date format
-            let pickedDate = formatDate().0 as Date
+            pickedStartDate = formatDate().0 as Date
             
-                switch pickedDate.compare(today) {
-                case .orderedSame :
-                    print("Same day selected")
-                    
+            switch pickedStartDate?.compare(today) {
+            case .orderedSame :
+                print("Same day selected")
+                startDateLbl.text = formatDate().1 //getting date in string format
+                isPickedStarDateValid = true
+                datePicker.isHidden = true
+                endDateBtnObj.isEnabled = true
                 // createAlert(titleText: "Select Future Date!", msgTxt: "You have selected today's date!")
-                    break // exact same
-                    
-                case .orderedAscending:
-                     print("Past day selected")
-                    
-                    createAlert(titleText: "Select Future Date", msgTxt: "You have selected past date!")
-                     
-                    break
+                break // exact same
                 
-                case .orderedDescending:
-                     print("Future day selected")
-                     
-                     let daysDiff = daysBetweenDates(startDate: today, endDate: pickedDate)
-                     print(daysDiff)
-                     
-                     //if days are between 1 and 30
-                     if daysDiff <= 30 {
-                        startDateLbl.text = formatDate().1 //getting date in string format
-                     }
-                     else{
-                        createAlert(titleText: "Days Exeeded!", msgTxt: "Choose no.of days between 1 & 30")
-                     }
-                    break
+            case .orderedAscending:
+                print("Past day selected")
+                
+                createAlert(titleText: "Select Future Date", msgTxt: "You have selected past date!")
+                
+                break
+                
+            case .orderedDescending:
+                print("Future day selected")
+                
+                let daysDiff = daysBetweenDates(startDate: today, endDate: pickedStartDate!)
+                print(daysDiff)
+                
+                //if days are between 1 and 30
+                if daysDiff <= 30 {
+                    startDateLbl.text = formatDate().1 //getting date in string format
+                    isPickedStarDateValid = true
+                    datePicker.isHidden = true
+                    endDateBtnObj.isEnabled = true
+                }
+                    
+                else{
+                    createAlert(titleText: "Days Exeeded!", msgTxt: "Choose no.of days between 1 & 30")
+                    //isPickedStarDateValid = false
+                }
+                break
+            case .none:
+                print("Nothing")
             }
-            datePicker.isHidden = true
+            
             
         }
         
         else if senderTag == 2{
             
-            endDateLbl.text = "\(formatDate())"
+            print("Get Picked Start date: \(pickedStartDate!)")
+            
+            //Getting today's date
+            
+            //picked date from date picker in date format
+            pickedEndDate = formatDate().0 as Date
+            
+            switch pickedEndDate?.compare(pickedStartDate!) {
+            case .orderedSame :
+                print("Same day selected")
+                
+                endDateLbl.text = formatDate().1 //getting date in string format
+                isPickedEndDateValid = true
+                datePicker.isHidden = true
+                // createAlert(titleText: "Select Future Date!", msgTxt: "You have selected today's date!")
+                break // exact same
+                
+            case .orderedAscending:
+                print("Past day selected")
+                createAlert(titleText: "Select Future Date", msgTxt: "You have selected past date!")
+                
+                break
+                
+            case .orderedDescending:
+                print("Future day selected")
+                
+                let daysDiff = daysBetweenDates(startDate: pickedStartDate!, endDate: pickedEndDate!)
+                print(daysDiff)
+                
+                //if days are between 1 and 30
+                
+                    if daysDiff <= 30{
+                        endDateLbl.text = formatDate().1 //getting date in string format
+                        isPickedEndDateValid = true
+                        datePicker.isHidden = true
+                    }
+                    
+                else{
+                    createAlert(titleText: "Days Exeeded!", msgTxt: "Choose no.of days between 1 & 30")
+                }
+                break
+            case .none:
+                print("Nothing!")
+            }
+            
+            
+            
+            
+           // endDateLbl.text = formatDate().1
         }
     }
     
@@ -108,7 +180,9 @@ class ViewController: UIViewController {
         
         let alertVC = UIAlertController(title: titleText, message: msgTxt, preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .cancel) { (action) in
-           
+            self.isPickedStarDateValid = false
+            self.datePicker.isHidden = false
+            self.endDateBtnObj.isEnabled = false
         }
         alertVC.addAction(action)
         present(alertVC, animated: true, completion: nil)
@@ -175,14 +249,16 @@ class ViewController: UIViewController {
         showDatePicker()
     }
     
-    var dateList = [NSManagedObject]()
     
+    
+    // Save button code
     @IBAction func saveBtnTap(_ sender: UIButton) {
     
     let managedObj = NSManagedObject(entity: entityDesc, insertInto: managedContext)
-           
-        managedObj.setValue(formatDate().0, forKey: "startDate")
-           //managedObj.setValue(endDate, forKey: "endDate")
+       
+        if(isPickedStarDateValid && isPickedEndDateValid){
+        managedObj.setValue(pickedStartDate!, forKey: "startDate")
+        managedObj.setValue(pickedEndDate!, forKey: "endDate")
            
            do{
                try managedContext.save()
@@ -194,9 +270,13 @@ class ViewController: UIViewController {
            catch{
                print("Error Saving Data!")
            }
+        }
+        else{
+            print("Select valid dates!")
+        }
 }
     
-    
+    //Fetch Button code
     @IBAction func fetchBtnTap(_ sender: UIButton) {
         
         let fetchData = NSFetchRequest<NSFetchRequestResult>(entityName: "DateValidation")
@@ -211,9 +291,11 @@ class ViewController: UIViewController {
                 else{
                     print("Fetching Success!")
                     dataTableView.reloadData()
-                    print(type(of: dateList))
+                    
+                    //Just for printing dates
                     for i in 0..<dateList.count{
-                    print(dateList[i].value(forKey: "startDate")! as Any)
+                        print(dateList[i].value(forKey: "startDate")! as Any)
+                        print(dateList[i].value(forKey: "endDate")! as Any)
                     }
                 }
             }
@@ -224,10 +306,12 @@ class ViewController: UIViewController {
     
 }
 
+
+//Tableview extension
 extension ViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //print("students: ",studentList.count)
+        
         return dateList.count
     }
     
@@ -235,21 +319,17 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate{
         
         let cell = dataTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! dataTableViewCell
         
-//        cell.idLabel.text = "\(studentList[indexPath.row].value(forKey: "id")!)"
-//        cell.nameLabel.text = studentList[indexPath.row].value(forKey: "name") as? String
-        
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd/YYYY"
+        formatter.dateFormat = "dd/MM/YYYY"
         
         let formattedStartDate = "\(formatter.string(from: dateList[indexPath.row].value(forKey: "startDate") as! Date))"
-        
         cell.startDateLbl.text = "\(formattedStartDate)"
         
-        //let formattedEndDate = "\(formatter.string(from: dateList[indexPath.row].value(forKey: "endDate") as! Date))"
         
-      //  cell.endDateLbl.text = "\(formattedEndDate)"
+        let formattedEndDate = "\(formatter.string(from: dateList[indexPath.row].value(forKey: "endDate") as! Date))"
         
-       // cell.endDateLbl.text = "\(studentList[indexPath.row].value(forKey: "endDate")!)"
+       // cell.endDateLbl.text = "\(dateList[indexPath.row].value(forKey: "endDate")!)"
+        cell.endDateLbl.text = "\(formattedEndDate)"
         
         return cell
         
