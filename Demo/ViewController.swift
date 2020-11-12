@@ -7,22 +7,40 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
 
+    var appDelegate: AppDelegate!
+    var managedContext: NSManagedObjectContext!
+    var entityDesc: NSEntityDescription!
+    
     @IBOutlet weak var startDateLbl: UILabel!
     @IBOutlet weak var endDateLbl: UILabel!
+    @IBOutlet weak var dataTableView: UITableView!
+    
     var senderTag = 0
     let datePicker = UIDatePicker()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        appDelegate = UIApplication.shared.delegate as? AppDelegate
+        managedContext = appDelegate.persistentContainer.viewContext
+        entityDesc = NSEntityDescription.entity(forEntityName: "DateValidation", in: managedContext)
+        
+        dataTableView.delegate = self
+        dataTableView.dataSource = self
+        
+        //Printing path of core data database file
+        print(NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).last!)
+
     }
     
     //Func to show date picker
     func showDatePicker(){
         
+        datePicker.isHidden = false
         datePicker.frame = CGRect(x: 0, y: Int(view.bounds.height)-200, width: Int(view.bounds.width), height: 200)
         datePicker.datePickerMode = .date
         datePicker.backgroundColor = .lightGray
@@ -74,7 +92,7 @@ class ViewController: UIViewController {
                      }
                     break
             }
-            
+            datePicker.isHidden = true
             
         }
         
@@ -146,16 +164,109 @@ class ViewController: UIViewController {
     }
     
     //Start Date button click
-    @IBAction func startDate(_ sender: UIButton) {
+    @IBAction func startDateTap(_ sender: UIButton) {
         senderTag = sender.tag
         showDatePicker()
     }
     
     //End Date button click
-    @IBAction func endDate(_ sender: UIButton) {
+    @IBAction func endDateTap(_ sender: UIButton) {
         senderTag = sender.tag
         showDatePicker()
     }
     
+    var dateList = [NSManagedObject]()
+    
+    @IBAction func saveBtnTap(_ sender: UIButton) {
+    
+    let managedObj = NSManagedObject(entity: entityDesc, insertInto: managedContext)
+           
+        managedObj.setValue(formatDate().0, forKey: "startDate")
+           //managedObj.setValue(endDate, forKey: "endDate")
+           
+           do{
+               try managedContext.save()
+               dateList.append(managedObj)
+               print("Data Saved!")
+            print(formatDate().0)
+               //dataTableView.reloadData()
+           }
+           catch{
+               print("Error Saving Data!")
+           }
+}
+    
+    
+    @IBAction func fetchBtnTap(_ sender: UIButton) {
+        
+        let fetchData = NSFetchRequest<NSFetchRequestResult>(entityName: "DateValidation")
+            
+            do{
+                
+                dateList = try managedContext.fetch(fetchData) as! [NSManagedObject]
+                
+                if dateList.count == 0{
+                    print("No records to show!")
+                }
+                else{
+                    print("Fetching Success!")
+                    dataTableView.reloadData()
+                    print(type(of: dateList))
+                    for i in 0..<dateList.count{
+                    print(dateList[i].value(forKey: "startDate")! as Any)
+                    }
+                }
+            }
+            catch{
+                print("Error fetching data!")
+            }
+        }
+    
 }
 
+extension ViewController: UITableViewDataSource, UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        //print("students: ",studentList.count)
+        return dateList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = dataTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! dataTableViewCell
+        
+//        cell.idLabel.text = "\(studentList[indexPath.row].value(forKey: "id")!)"
+//        cell.nameLabel.text = studentList[indexPath.row].value(forKey: "name") as? String
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/YYYY"
+        
+        let formattedStartDate = "\(formatter.string(from: dateList[indexPath.row].value(forKey: "startDate") as! Date))"
+        
+        cell.startDateLbl.text = "\(formattedStartDate)"
+        
+        //let formattedEndDate = "\(formatter.string(from: dateList[indexPath.row].value(forKey: "endDate") as! Date))"
+        
+      //  cell.endDateLbl.text = "\(formattedEndDate)"
+        
+       // cell.endDateLbl.text = "\(studentList[indexPath.row].value(forKey: "endDate")!)"
+        
+        return cell
+        
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete{
+            
+            //Row deletion goes here
+        }
+        
+    }
+
+    
+}
