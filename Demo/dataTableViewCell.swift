@@ -12,7 +12,9 @@ class dataTableViewCell: UITableViewCell {
 
     @IBOutlet weak var startDateLbl: UILabel!
     @IBOutlet weak var endDateLbl: UILabel!
-    
+    @IBOutlet weak var startTimeLbl: UILabel!
+    @IBOutlet weak var endTimeLbl: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
